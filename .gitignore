@@ -1,0 +1,17 @@
+.ipynb_checkpoints
+Dataset
+1.Quora.ipynb
+2.Quora_Preprocessing.ipynb
+3.Q_Mean_W2V.ipynb
+4.ML_models.ipynb
+archive.zip?GoogleAccessId=web-data@kaggle-161607.iam.gserviceaccount.com&Expires=1591627577&Signature=OARWxHMKOtPSUJP0vTszufCR+0rwRb47YJb6Ft3n%2Fy6I7ubBhhgQ2fzdyF01WMcNnoGWlECQOVLxkTmEoQoD0%2FO8obs4BrEmJad1v11scPuUPl8whUM5GBMimGtG5UzmE
+df_fe_without_preprocessing_train.csv
+nlp_features_train.csv
+TFIDF_Pipleline_TransformedData.pkl
+TFIDF_WV_Pipleline_TransformedData.pkl
+train_n.txt
+train_p.txt
+wget-log
+modules/__pycache__/__init__.cpython-37.pyc
+modules/__pycache__/custom_transformers.cpython-37.pyc
+modules/__pycache__/Text_transformers.cpython-37.pyc

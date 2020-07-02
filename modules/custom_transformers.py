@@ -20,6 +20,50 @@ from collections import defaultdict
 from sklearn.decomposition import PCA
 from pdb import set_trace
         
+class DF_PropostionalSampling(BaseEstimator, TransformerMixin):
+
+    def __init__(self,minority_prop = 0.5,final_size = None):
+        self.final_size = final_size
+        self.minority_prop = majority_prop
+
+    def fit(self, X, y=None):
+        size = len(X)
+
+        if self.final_size is None: self.final_size = size
+        assert size >= self.final_size
+        
+        # class_counts in original data
+        class_counts = pd.Series(y).value_counts()
+        min_ind = class_counts.argmin()
+        min_count,min_class_lab = class_counts[min_ind],class_counts.index[min_ind]
+        max_count = size - min_count
+
+        # user specfied propotions
+        min_size = int(final_size * self.minority_prop)
+        maj_size = int(final_size * (1-self.minority_prop))
+
+        if not (min_count>min_size or max_count>maj_size):
+            print('not enough label counts to down sample data to final size in required proportion so reducing ti next best size...')
+
+            if min_count < min_size:
+                min_size = min_count
+                maj_size = int(min_size * self.minority_prop/(1-self.minority_prop))
+
+            if max_count < maj_size: 
+                maj_size = max_count
+                min_size = int(maj_size * (1-self.minority_prop)/self.minority_prop)
+        
+        min_sample = X[y==min_class_lab].sample(n = min_size)
+        maj_sample = X[y!=min_class_lab].sample(n = maj_size)
+
+        data = pd.concat([min_sample, maj_sample])
+        data = data.sample(frac=1).reset_index(drop=True)
+
+        return data
+
+    def transform(self,X):
+        return X
+
 
 class DF_RemoveMulticolinear(BaseEstimator, TransformerMixin):
     # FunctionTransformer but for pandas DataFrames
@@ -72,6 +116,7 @@ class Converter(BaseEstimator, TransformerMixin):
 
     def transform(self, X):
         X = X['question1']+' '+X['question2']
+        set_trace()
         return X.values.ravel()
 
 class DFFeatureUnion(BaseEstimator, TransformerMixin):

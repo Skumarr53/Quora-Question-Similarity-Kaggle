@@ -15,3 +15,16 @@ wget-log
 modules/__pycache__/__init__.cpython-37.pyc
 modules/__pycache__/custom_transformers.cpython-37.pyc
 modules/__pycache__/Text_transformers.cpython-37.pyc
+GoogleNews-vectors-negative300.bin.gz
+Quora_question_similarities_sampleFeaturesExtraction.ipynb
+TFIDF_WV_generate.py
+train_30k.csv
+train_features_30k.csv
+train_features_TrainedGensim.csv
+train_features.csv
+test_30k.csv
+test_features_30k.csv
+TFIDF_Word2Vec_Matrix_q1q2.npy
+TFIDF_Word2Vec_Matrix.npy
+XGB_handcrafted_feaures.py
+XGboost_tfidf.pkl

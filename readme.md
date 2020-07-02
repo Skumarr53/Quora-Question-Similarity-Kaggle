@@ -2,11 +2,29 @@
 
 Source: https://www.kaggle.com/c/quora-question-pairs
 
-## Problem Statement
+- [Quora Question Pairs - Kaggle](#quora-question-pairs---kaggle)
+  - [Objective](#objective)
+    - [Real world/Business Objectives and Constraints¶](#real-worldbusiness-objectives-and-constraints)
+  - [Data Description](#data-description)
+  - [Metric](#metric)
+  - [Feature Extraction](#feature-extraction)
+    - [Advanced NLP features (based descriptive stats)](#advanced-nlp-features-based-descriptive-stats)
+    - [fuzzy features (based on various similartiy scores)](#fuzzy-features-based-on-various-similartiy-scores)
+    - [Distance Metircs (on Word2Vec extracted from Gensim)](#distance-metircs-on-word2vec-extracted-from-gensim)
+  - [TFIDF Features](#tfidf-features)
+  - [Best Model](#best-model)
+    - [HyperParameters search space](#hyperparameters-search-space)
+    - [Validation results](#validation-results)
+    - [Calibration on Best Estimator](#calibration-on-best-estimator)
+  - [Technologies Used](#technologies-used)
+  - [Credits:](#credits)
 
-* Identify which questions asked on Quora are duplicates of questions that have already been asked.
-* This could be useful to instantly provide answers to questions that have already been answered.
-* task is to predict whether a pair of questions given are duplicates or not.
+## Objective
+
+Quora is a platform to ask questions and connect with people who contribute unique insights and quality answers. Over 100 million people visit Quora every month, so it's no surprise that many people ask similarly worded questions. Multiple questions with the same intent can cause seekers to spend more time finding the best answer to their question, and make writers feel they need to answer multiple versions of the same question.
+
+ If we can identify which questions asked on Quora are duplicates of questions that have already been asked helps us to instantly provide answers to questions that have already been answered. This project focus is to classify whether question pairs are duplicates or not using advanced NLP techniques.
+
 
 ### Real world/Business Objectives and Constraints¶
 * The cost of a mis-classification can be very high.
@@ -15,21 +33,17 @@ Source: https://www.kaggle.com/c/quora-question-pairs
 * Interpretability is partially important.
 
 ## Data Description
-- Data will be in a file Train.csv
-- Train.csv contains 5 columns : qid1, qid2, question1, question2, is_duplicate
-- Size of Train.csv - 60MB
-- Number of rows in Train.csv = 404,290
 
-#### columns
 * id: Looks like a simple rowID
 * qid{1, 2}: The unique ID of each question in the pair
 * question{1, 2}: The actual textual contents of the questions.
 * is_duplicate: The label that we are trying to predict - whether the two questions are duplicates of each other.
+* Number of rows in = 404,290
 
 ## Metric
 Since higher misclassification leads to Customer dissatisfaction (lower precision rate) and consumer disengagement (lower recall rate)
 
-We have to be highly sure about our predictions So probailities of examples belonging to a class seems to be sound metric for our problem. LogLoss looks at the probabilities themselves and not just the order of the predictions like AUC
+We have to be highly sure about our predictions So probailities of examples belonging to a class seems to be sound metric for our problem. LogLoss metric looks at the probabilities themselves.
 
 * log-loss : LogarithmicLoss (metric we want to optimize for)
 * Binary Confusion Matrix (more human intrepretable)
@@ -37,156 +51,103 @@ We have to be highly sure about our predictions So probailities of examples belo
 
 ## Feature Extraction
 
-### Basic Feature Extraction 
-
-* freq_qid1 = Frequency of qid1's
-* freq_qid2 = Frequency of qid2's
-* q1len = Length of q1
-* q2len = Length of q2
-* q1_n_words = Number of words in Question 1
-* q2_n_words = Number of words in Question 2
-* word_Common = (Number of common unique words in Question 1 and Question 2)
-* word_Total =(Total num of words in Question 1 + Total num of words in Question 2)
-* word_share = (word_common)/(word_Total)
-* freq_q1+freq_q2 = sum total of frequency of qid1 and qid2
-* freq_q1-freq_q2 = absolute difference of frequency of qid1 and qid2
-
 ### Advanced NLP features (based descriptive stats)
 
-* cwc_min : Ratio of common_word_count to min lenghth of word count of Q1 and Q2
-* cwc_min = common_word_count / (min(len(q1_words), len(q2_words))
+* **cwc_min** : Ratio of common_word_count to min lenghth of word count of Q1 and Q2
+* **cwc_max** : Ratio of common_word_count to max lenghth of word count of Q1 and Q2
+* **csc_min** : Ratio of common_stop_count to min lenghth of stop count of Q1 and Q2
+* **csc_max** : Ratio of common_stop_count to max lenghth of stop count of Q1 and Q2
+* **ctc_min** : Ratio of common_token_count to min lenghth of token count of Q1 and Q2
+* **ctc_max** : Ratio of common_token_count to max lenghth of token count of Q1 and Q2
+* **last_word_eq** : Check if First word of both questions is equal or not
+* **first_word_eq** : Check if First word of both questions is equal or not
+* **abs_len_diff** : Abs. length difference
+* **mean_len** : Average Token Length of both Questions
 
+### fuzzy features (based on various similartiy scores)
 
+- **fuzz ratio**
+- **fuzz partial ratio**
+- **token sort ratio**
+- **token set ratio**
 
-* cwc_max : Ratio of common_word_count to max lenghth of word count of Q1 and Q2
-* cwc_max = common_word_count / (max(len(q1_words), len(q2_words))
+### Distance Metircs (on Word2Vec extracted from Gensim)
 
+* Word mover distance
+* Normalized word mover distance
+* Cosine distance between vectors of question1 and question2
+* Manhattan distance between vectors of question1 and question2
+* Jaccard similarity between vectors of question1 and question2
+* Canberra distance between vectors of question1 and question2
+* Euclidean distance between vectors of question1 and question2
+* Minkowski distance between vectors of question1 and question2
+* Braycurtis distance between vectors of question1 and question2
+* Skew of vector for question1
+* Skew of vector for question2
+* Kurtosis of vector for question1
+* Kurtosis of vector for question2
 
-
-* csc_min : Ratio of common_stop_count to min lenghth of stop count of Q1 and Q2
-* csc_min = common_stop_count / (min(len(q1_stops), len(q2_stops))
-
-
-
-* csc_max : Ratio of common_stop_count to max lenghth of stop count of Q1 and Q2
-* csc_max = common_stop_count / (max(len(q1_stops), len(q2_stops))
-
-
-
-* ctc_min : Ratio of common_token_count to min lenghth of token count of Q1 and Q2
-* ctc_min = common_token_count / (min(len(q1_tokens), len(q2_tokens))
-
-
-
-* ctc_max : Ratio of common_token_count to max lenghth of token count of Q1 and Q2
-* ctc_max = common_token_count / (max(len(q1_tokens), len(q2_tokens))
-
-
-
-* last_word_eq : Check if First word of both questions is equal or not
-* last_word_eq = int(q1_tokens[-1] == q2_tokens[-1])
-
-
-
-* first_word_eq : Check if First word of both questions is equal or not
-* first_word_eq = int(q1_tokens[0] == q2_tokens[0])
-
-
-
-* abs_len_diff : Abs. length difference
-* abs_len_diff = abs(len(q1_tokens) - len(q2_tokens))
-
-
-
-* mean_len : Average Token Length of both Questions
-* mean_len = (len(q1_tokens) + len(q2_tokens))/2
-
-### Advanced fuzzy feature (based on various similartiy scores)
-
-* Package -  https://github.com/seatgeek/fuzzywuzzy#usage
-* features description - http://chairnerd.seatgeek.com/fuzzywuzzy-fuzzy-string-matching-in-python/
-
-**Feature names**:
-
-- _fuzz_ratio_ 
-<br>
-
-- _fuzz_partial_ratio_
-<br>
-
-- _token_sort_ratio_
-<br>
-
-- _token_set_ratio_
-<br>
-
+## TFIDF Features
+- TF-IDF 
+- TF-IDF wegihted Word2Vec features
 
 ## Best Model
+Trained various models like Logistic Regressin, SVM and XGBoost with hyperparameter tuning to select best model. **XGBoost** turns out be best model with highest accuracy of **84%**.
+ 
 
-Since our objective is to optimize for log loss (dependent on predicted probabilities). We need need be sure of probabalities coming out of our model. So ML algorithms are warpped in ```CalibratedClassifierCV``` which calibrates model probabilities.  
-
-### Simple TFIDF 
-
-```python
+``` py
 clf = Pipeline([
-    ('fill_na', Pipeline([
-        ('fill_null',Text_FillNa(fill_value=''))])),
     ('features',FeatureUnion([
-        ('numerics_stats', Pipeline([('summerize',Text_SimStats())])),
-        ('NLP_vectorize',Pipeline([
-            ('extract',ColumnExtractor(['question1','question2'])),
-            ('preprocess', Quora_TextPreprocess()),
-            ('nlp_features',DF_NLP_extract())])),
-        ('Fuzzy_vectorize',Pipeline([
-            ('extract',ColumnExtractor(['question1','question2'])),
-            ('preprocess', Quora_TextPreprocess()),
-            ('fuzzy_features',DF_fuzzySimExtract())])),
-        ('TFIDF_vectorizer',Pipeline([
-            ('extract',ColumnExtractor(['question1','question2'])),
+        ('nlp_features',DF_NLP_extract()),
+        ('nlp_stats_features',NLP_TextStats()),
+        ('fuzzy_features',DF_fuzzySimExtract()),
+        ('NLP_Dist_features',NLP_DistMetrics(gensim_model = gen_model,verbose = True)),
+        ('TFIDF_vectorizer',Pipeline([ 
             ('combine',Converter()),
             ('TFIDF_wv_features',TfidfVectorizer(ngram_range=(1,2)))]))
         ]))])
-
-```
-
-### TFIDF weighted Word2Vec features 
-
-```python
-clf = Pipeline([
-    ('fill_na', Pipeline([
-        ('fill_null',Text_FillNa(fill_value=''))])),
-    ('features',FeatureUnion([
-        ('numerics_stats', Pipeline([('summerize',Text_SimStats())])),
-        ('NLP_vectorize',Pipeline([
-            ('extract',ColumnExtractor(['question1','question2'])),
-            ('preprocess', Quora_TextPreprocess()),
-            ('nlp_features',DF_NLP_extract())])),
-        ('Fuzzy_vectorize',Pipeline([
-            ('extract',ColumnExtractor(['question1','question2'])),
-            ('preprocess', Quora_TextPreprocess()),
-            ('fuzzy_features',DF_fuzzySimExtract())])),
-        ('TFIDF_vectorizer',Pipeline([
-            ('extract',ColumnExtractor(['question1','question2'])),
-            ('TFIDF_wv_features',TFIDF_WV_transformer(TFIDF_dict = tfidf_dict))]))
-        ]))])
-
 ```
 
 ### HyperParameters search space
 ``` py
 param_grid = {
-    'base_estimator__n_estimators': [100, 150, 250],
-    'base_estimator__learning_rate': [0.10, 0.5],
-    'base_estimator__min_child_weight': [1, 5, 10],
-    'base_estimator__gamma': [0.5, 1, 1.5],
-    'base_estimator__subsample': [0.6, 0.8],
-    'base_estimator__colsample_bytree': [0.6, 0.8],
+    "n_estimators": [100, 150, 250, 500],
+    "learning_rate": [0.05, 0.10, 0.15, 0.20, 0.25, 0.30],
+    "max_depth": [3, 4, 5, 6, 8, 10, 12, 15],
+    "min_child_weight": [1, 3, 5, 7],
+    "gamma": [0.0, 0.1, 0.2, 0.3, 0.4],
+    "colsample_bytree": [0.3, 0.4, 0.5, 0.7],
+    'eta': [0.1, 0.2, 0.3]
 }
 ```
 
-### XGB Validation results
+### Validation results
 
 ![](BestModel.png)
 
 ### Calibration on Best Estimator
 
+``` py
+{'n_estimators': 500,
+  'min_child_weight': 1,
+  'max_depth': 15,
+  'learning_rate': 0.25,
+  'gamma': 0.2,
+  'eta': 0.1,
+  'colsample_bytree': 0.4}
+```
+## Technologies Used
+
+![](https://forthebadge.com/images/badges/made-with-python.svg)
+
+[<img target="_blank" src="Snapshots/scikit.png" width=202>](https://scikit-learn.org/stable/#)
+[<img target="_blank" src="Snapshots/gensim.png" width=202>](https://radimrehurek.com/gensim/models/word2vec.html)
+[<img target="_blank" src="Snapshots/spacy.jpg" width=100>](https://scikit-learn.org/stable/#)
+
+
+
+
+## Credits:
+* FuzzyWuzzy -  https://github.com/seatgeek/fuzzywuzzy#usage
+* fuzzywuzzy features description - http://chairnerd.seatgeek.com/fuzzywuzzy-fuzzy-string-matching-in-python/
+* Is That a Duplicate Quora Question? - https://www.linkedin.com/pulse/duplicate-quora-question-abhishek-thakur/

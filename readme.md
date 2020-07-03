@@ -18,6 +18,7 @@ Source: https://www.kaggle.com/c/quora-question-pairs
     - [Calibration on Best Estimator](#calibration-on-best-estimator)
   - [Technologies Used](#technologies-used)
   - [Credits:](#credits)
+  - [Creator:](#creator)
 
 ## Objective
 
@@ -146,8 +147,17 @@ param_grid = {
 
 
 
+</br>
 
 ## Credits:
 * FuzzyWuzzy -  https://github.com/seatgeek/fuzzywuzzy#usage
 * fuzzywuzzy features description - http://chairnerd.seatgeek.com/fuzzywuzzy-fuzzy-string-matching-in-python/
 * Is That a Duplicate Quora Question? - https://www.linkedin.com/pulse/duplicate-quora-question-abhishek-thakur/
+
+
+
+</br>
+
+------
+## Creator:
+[<img target="_blank" src="https://media-exp1.licdn.com/dms/image/C4D03AQG-6F3HHlCTVw/profile-displayphoto-shrink_200_200/0?e=1599091200&v=beta&t=WcZLox9lzVQqIDJ2-5DsEhNFvEE1zrZcvkmcepJ9QH8" width=150>](https://skumar-djangoblog.herokuapp.com/)
